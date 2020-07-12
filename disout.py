@@ -91,8 +91,40 @@ class Disout(nn.Module):
             x=x+dist
             x=x/percent_ones
             return x
-            
-            
+
+
+class FCDisout(nn.Module):
+
+    def __init__(self, dist_prob=0.5, alpha=5.0):
+        super(FCDisout, self).__init__()
+
+        self.dist_prob = dist_prob
+        self.weight_behind = None
+        self.alpha = alpha
+
+    def forward(self, x):
+        if not self.training:
+            return x
+        else:
+            x = x.clone()
+            mask = torch.rand(x.shape, device=x.device)
+            mask = (mask <= self.dist_prob).float()
+            percent_ones = mask.sum() / float(mask.numel())
+            N = x.shape[0]
+
+            # calculate gradient
+            if not (self.weight_behind is None) and not (len(self.weight_behind) == 0):
+                KM = self.weight_behind.max(dim=0, keepdim=True).values
+                u = torch.randn(*x.shape, device=x.device)
+                sig = torch.ones(KM.shape, device=x.device)
+                sig[torch.rand(KM.shape, device=sig.device) < 0.5] = -1
+
+                var = torch.var(x).clone().detach()
+                dist = self.alpha * sig * u * KM * (var ** 0.5) / N
+
+            return (x * mask + dist * (1 - mask)) / percent_ones
+
+
 class LinearScheduler(nn.Module):
     def __init__(self, disout, start_value, stop_value, nr_steps):
         super(LinearScheduler, self).__init__()

@@ -39,7 +39,25 @@ For ResNet-50 on ImageNet, you can run
 python train_imagenet.py --dist_prob 0.07 --alpha 1.0 --block_size 7
 ```
 
+Add the experiment about conventional CNNs w/o Disout layer in the paper.
+
+baseline experiment of conventional CNNs on CIFAR-10 get accuracy: 85.66%.
+
+```python
+python CNN_train.py
+```
+
+experiment of conventional CNNs with Disout layer  on CIFAR-10 get accuracy: 87.53%.
+
+```python
+python FC_train.py --dist_prob 0.6 --alpha 5.0
+```
+
 ## Results
+
+<p align="center">
+<img src="images/result3.png" width="800">
+</p>
 
 <p align="center">
 <img src="images/result.png" width="800">
@@ -48,7 +66,6 @@ python train_imagenet.py --dist_prob 0.07 --alpha 1.0 --block_size 7
 <p align="center">
 <img src="images/result2.png" width="800">
 </p>
-
 You should achieve about 94.50% accuracy on CIFAR-10, and 78.76% top-1 accuracy on ImageNet with the default setting.
 
 ## Citation
